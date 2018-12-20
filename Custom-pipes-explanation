@@ -1,0 +1,39 @@
+The orderBy pipe
+The orderBy pipe we implement is going to order an array of objects based on any of the object's properties. The usage pattern for sorting items in ascending order based on the fieldName property is going to be:
+
+*ngFor="let item of items| orderBy:fieldName"
+And for sorting items in descending order, the usage pattern is:
+
+*ngFor="let item of items| orderBy:-fieldName"
+Make note of the extra hyphen (-) before fieldName.
+
+We plan to add OrderByPipe in a new shared module. Are you thinking, why not add it to core module? By convention, the core module contains global services and one-time-use components. This is exactly one core module per application. Shared modules, on the other hand, have components/directives/pipes that are shared across modules. Such shared modules can be also be defined at multiple levels, across the parent and child modules. In this case, we will define the shared module inside AppModule.
+
+Create a new SharedModule module by running this command in the trainer/src/app directory:
+
+ng generate module shared --module app
+From the command line, navigate to the trainer/src/app/shared folder and generate the order by pipe boilerplate:
+
+ng generate pipe order-by
+Open order-by.pipe.ts and update the definition from the checkpoint3.2 code (GitHub location: http://bit.ly/ng6be-3-2-order-by-pipe). While we are not going to delve into the pipe's implementation details, some relevant parts need to be highlighted. Look at this pipe outline:
+
+@Pipe({ name: 'orderBy' }) 
+export class OrderByPipe {
+  transform(value: Array<any>, field:string): any { 
+   ... 
+  } 
+}
+The preceding field variable receives the field on which sorting is required. If the field has a - prefix, we truncate the prefix before sorting the array in descending order.
+
+The pipe also uses the spread operator, [...], which may be new to you. Learn more about the spread operator on MDN at http://bit.ly/js-spread.
+To use OrderByPipe, update the template view for workout history:
+
+<tr *ngFor="let historyItem of history|orderBy:'-startedOn'; let i = index"> 
+And again, we need to export the pipe from the shared module allowing WorkoutHistoryComponent to use it. Add an exports property on SharedModule and set it to OrderByPipe:
+
+declarations:[...],
+exports:[OrderByPipe]
+The historical data will now be sorted in descending order on the startedOn field.
+
+Make note of the single quotes around the pipe parameter ('-startedOn'). We are passing a literal string to the orderBy pipe. Pipe parameters support data binding and can be bound to component properties too.
+That's enough for the orderBy pipe. Let's implement filtering
